@@ -17,9 +17,8 @@ import (
 
 	smf_context "github.com/free5gc/smf/internal/context"
 	"github.com/free5gc/smf/internal/logger"
-	"github.com/free5gc/smf/internal/util"
+	"github.com/free5gc/smf/internal/util/oauth"
 	"github.com/free5gc/smf/pkg/factory"
-	"github.com/free5gc/openapi/models"
 	logger_util "github.com/free5gc/util/logger"
 )
 
@@ -48,7 +47,7 @@ func NewRouter() *gin.Engine {
 func AddService(engine *gin.Engine) *gin.RouterGroup {
 	group := engine.Group(factory.SmfPdusessionResUriPrefix)
 
-	routerAuthorizationCheck := util.NewRouterAuthorizationCheck("nsmf-pdusession")
+	routerAuthorizationCheck := util_oauth.NewRouterAuthorizationCheck("nsmf-pdusession")
 	group.Use(func(c *gin.Context) {
 		routerAuthorizationCheck.Check(c, smf_context.GetSelf())
 	})
