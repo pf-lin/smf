@@ -20,11 +20,18 @@ import (
 	"github.com/free5gc/smf/pkg/factory"
 )
 
+var smfContext SMFContext
+
 func Init() {
 	smfContext.NfInstanceID = uuid.New().String()
 }
 
-var smfContext SMFContext
+type NFContext interface {
+	AuthorizationCheck(token, serviceName string) error
+}
+var _ NFContext = &SMFContext{}
+
+
 
 type SMFContext struct {
 	Name         string
@@ -288,23 +295,22 @@ func GetUEDefaultPathPool(groupName string) *UEDefaultPaths {
 	return smfContext.UEDefaultPathPool[groupName]
 }
 
-func (c *SMFContext) GetTokenCtx(scope, targetNF string) (
+func (c *SMFContext) GetTokenCtx(scope, string, targetNF models.NfType) (
 	context.Context, *models.ProblemDetails, error,
 ) {
 	if !c.OAuth2Required {
 		return context.TODO(), nil, nil
 	}
-	return oauth.GetTokenCtx(models.NfType_SMF,
-		c.NfInstanceID, c.NrfUri, scope, targetNF)
+	return oauth.GetTokenCtx(models.NfType_SMF, targetNF,
+		c.NfInstanceID, c.NrfUri, scope)
 }
-
-func (context *SMFContext) AuthorizationCheck(token, serviceName string) error {
-	if !context.OAuth2Required {
+ 
+func (c *SMFContext) AuthorizationCheck(token, serviceName string) error {
+	if !c.OAuth2Required {
+		logger.UtilLog.Debugf("SMFContext::AuthorizationCheck: OAuth2 not required\n")
 		return nil
 	}
-	err := oauth.VerifyOAuth(token, serviceName, context.NrfCertPem)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	logger.UtilLog.Debugf("SMFContext::AuthorizationCheck: token[%s] serviceName[%s]\n", token, serviceName)
+	return oauth.VerifyOAuth(token, serviceName, c.NrfCertPem)
 }
