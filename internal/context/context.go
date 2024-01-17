@@ -29,9 +29,8 @@ func Init() {
 type NFContext interface {
 	AuthorizationCheck(token, serviceName string) error
 }
+
 var _ NFContext = &SMFContext{}
-
-
 
 type SMFContext struct {
 	Name         string
@@ -295,7 +294,7 @@ func GetUEDefaultPathPool(groupName string) *UEDefaultPaths {
 	return smfContext.UEDefaultPathPool[groupName]
 }
 
-func (c *SMFContext) GetTokenCtx(scope, string, targetNF models.NfType) (
+func (c *SMFContext) GetTokenCtx(scope string, targetNF models.NfType) (
 	context.Context, *models.ProblemDetails, error,
 ) {
 	if !c.OAuth2Required {
@@ -304,7 +303,7 @@ func (c *SMFContext) GetTokenCtx(scope, string, targetNF models.NfType) (
 	return oauth.GetTokenCtx(models.NfType_SMF, targetNF,
 		c.NfInstanceID, c.NrfUri, scope)
 }
- 
+
 func (c *SMFContext) AuthorizationCheck(token, serviceName string) error {
 	if !c.OAuth2Required {
 		logger.UtilLog.Debugf("SMFContext::AuthorizationCheck: OAuth2 not required\n")

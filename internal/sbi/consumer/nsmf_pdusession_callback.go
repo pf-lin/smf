@@ -23,7 +23,7 @@ func SendSMContextStatusNotification(uri string) (*models.ProblemDetails, error)
 		if err != nil {
 			return pd, err
 		}
-0
+
 		logger.CtxLog.Infoln("[SMF] Send SMContext Status Notification")
 		httpResp, localErr := client.
 			IndividualSMContextNotificationApi.
