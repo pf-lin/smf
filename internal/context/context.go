@@ -32,6 +32,9 @@ type NFContext interface {
 
 var _ NFContext = &SMFContext{}
 
+var smfContext SMFContext
+
+
 type SMFContext struct {
 	Name         string
 	NfInstanceID string
@@ -306,10 +309,12 @@ func (c *SMFContext) GetTokenCtx(scope string, targetNF models.NfType) (
 
 func (c *SMFContext) AuthorizationCheck(token, serviceName string) error {
 	if !c.OAuth2Required {
+
 		logger.UtilLog.Debugf("SMFContext::AuthorizationCheck: OAuth2 not required\n")
 		return nil
 	}
 
 	logger.UtilLog.Debugf("SMFContext::AuthorizationCheck: token[%s] serviceName[%s]\n", token, serviceName)
+
 	return oauth.VerifyOAuth(token, serviceName, c.NrfCertPem)
 }

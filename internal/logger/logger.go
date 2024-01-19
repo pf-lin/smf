@@ -23,7 +23,8 @@ var (
 	GsmLog      *logrus.Entry
 	PfcpLog     *logrus.Entry
 	PduSessLog  *logrus.Entry
-	UtilLog		*logrus.Entry
+
+	UtilLog     *logrus.Entry
 )
 
 func init() {
